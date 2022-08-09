@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviour
 
     GameObject mainMenuObject;
     GameObject quitPanel;
+    GameObject scoreTexts;
     GameObject instructionPanel;
 
     public static int numOfHits;
@@ -44,12 +45,19 @@ public class UIManager : MonoBehaviour
 
         mainMenuObject = GameObject.Find("MainMenu");
         quitPanel = GameObject.Find("QuitPanel");
+        scoreTexts = GameObject.Find("ScoreTexts");
         instructionPanel = GameObject.Find("InstructionsPanel");
 
+        ScoreVisibility(false);
         QuitPanelVisibility(false);
         InstructionVisibility(false);
 
         ResetNumberOfHits();
+    }
+
+    public void ScoreVisibility(bool toShow)
+    {
+        scoreTexts.SetActive(toShow);
     }
 
     public void MenuVisibility(bool toShow)
@@ -83,7 +91,8 @@ public class UIManager : MonoBehaviour
 
         yield return new WaitUntil(() => !imageFadeAnimation.isPlaying);
 
-        startTime = Time.time;
+        startTime = Time.realtimeSinceStartup;
+        ScoreVisibility(true);
         StopFadeAnimation();
         MainFlow.Instance.InitializeReferences();
     }
@@ -92,6 +101,7 @@ public class UIManager : MonoBehaviour
     {
         CheckForQuitInput();
         CheckInputForStart();
+        UpdateTimeSurvived();
     }
 
     void CheckInputForStart()
@@ -110,13 +120,26 @@ public class UIManager : MonoBehaviour
             StartCoroutine(CheckForAnimationFinishStart());
     }
 
+    void UpdateTimeSurvived()
+    {
+        if (!MainFlow.isGameStarted) return;
+
+        timeSurvivedText.text = GetTimeSurvived();
+    }
+
     string GetTimeSurvived()
     {
-        float timePassed = Time.time - startTime;
+        float timePassed = Time.realtimeSinceStartup - startTime;
         float minutes = timePassed / 60;
         float seconds = timePassed % 60;
 
         return Mathf.FloorToInt(minutes) + ":" + Mathf.FloorToInt(seconds);
+    }
+
+    public void UpdateTotalHits()
+    {
+        numOfHits++;
+        totalObjectHits.text = GetTotalHitsString();
     }
 
     string GetTotalHitsString()

@@ -86,6 +86,7 @@ public class Enemy : MonoBehaviour
         if(!isDanger) MainFlow.Instance.PlayExplosionAt(pos);
 
         MainFlow.Instance.soundManager.PlaySafeHitSound();
+        UIManager.Instance.UpdateTotalHits();
         SpawnManager.Instance.RemoveEnemy(this);
     }
 
